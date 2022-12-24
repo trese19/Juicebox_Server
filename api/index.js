@@ -23,15 +23,16 @@ recoveredData;
 
 jwt.verify(token, 'server secret');
 
-// middleware
+// Authorization middleware verifies that jwt is valid and set user to request on req.
 // set `req.user` if possible
 apiRouter.use(async (req, res, next) => {
   const prefix = 'Bearer ';
   const auth = req.header('Authorization');
 
-  if (!auth) { // nothing to see here
+  if (!auth) { 
     next();
   } else if (auth.startsWith(prefix)) {
+    // get token from auth header; can also use .split()
     const token = auth.slice(prefix.length);
 
     try {
@@ -39,6 +40,7 @@ apiRouter.use(async (req, res, next) => {
 
       if (id) {
         req.user = await getUserById(id);
+        // attach user to req
         next();
       }
     } catch ({ name, message }) {
@@ -84,3 +86,6 @@ apiRouter.use((error, req, res, next) => {
 });
 
 module.exports = apiRouter;
+
+
+
